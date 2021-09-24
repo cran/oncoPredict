@@ -1,10 +1,10 @@
 # oncoPredict 
 (Predict Response from Expression Data and Identify Cell line/Clinical Targets and Trends)
 
-An R package for drug response prediction and drug-gene association prediction. The prepared GDSC and CTRP matrices for the calcPhenotype() are here stored at oncoPredict's OSF.  
- *  For drug response prediction, use **calcPhenotype**
- *  For pre-clinical biomarker discovery, use **GLDS**
- *  For clinical biomarker discovery, use **IDWAS** (for CNV or somatic mutation association with drug response) or indicate **cc=TRUE** (for gene expression association with drug response) in calcPhenotype()
+An R package for drug response prediction and drug-gene association prediction. The prepared GDSC and CTRP matrices for the calcPhenotype() are located in the oncoPredict OSF.
+ *  For drug response prediction, use **calcPhenotype**. 
+ *  For pre-clinical biomarker discovery, use **GLDS**. 
+ * For clinical biomarker discovery, use **IDWAS** (for CNV or somatic mutation association with drug response) or indicate **cc=TRUE** (for gene expression association with drug response) in calcPhenotype(). 
  
 ## R <h2>
  * This directory contains all the R functions included in this package. 

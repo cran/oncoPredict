@@ -64,21 +64,27 @@ n=10
 #Indicate whether or not you would like to test cnv data. If TRUE, you will test cnv data. If FALSE, you will test mutation data.
 cnv=TRUE
 
+original<-getwd()
 wd<-tempdir()
 savedir<-setwd(wd)
 
 #Apply map_cnv()
 #This function produces the file map.RData, which stores the object 'theCnvQuantVecList_mat'
-map_cnv(Cnvs=Cnvs)
+#map_cnv(Cnvs=Cnvs)
 
 #Set the data parameter.
-load('map.RData') #This loads the object 'theCnvQuantVecList_mat', which was obtained using map_cnv()
+#load('map.RData') #This loads the object 'theCnvQuantVecList_mat', which was obtained using map_cnv()
 #Make sure this data is a data frame and that colnames() are samples.
-data<-as.data.frame(t(theCnvQuantVecList_mat))
-samps<-colnames(data)
-colnames(data)<-substr(samps,1,nchar(samps)-12)
+#data<-as.data.frame(t(theCnvQuantVecList_mat))
+#samps<-colnames(data)
+#colnames(data)<-substr(samps,1,nchar(samps)-12)
+
+#library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+#library(org.Hs.eg.db)
+#library(maftools)
 
 #Apply idwas()
-idwas(drug_prediction=drug_prediction, data=data, n=n, cnv=cnv)
+#idwas(drug_prediction=drug_prediction, data=data, n=n, cnv=cnv)
 
+setwd(original)
 ```

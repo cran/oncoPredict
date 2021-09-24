@@ -1,6 +1,6 @@
 Package: oncoPredict
 Title: Drug and Biomarker Discovery
-Version: 0.1
+Version: 0.2
 Authors@R: 
     c(person(given = "Danielle",
            family = "Maeser",
@@ -17,20 +17,19 @@ Encoding: UTF-8
 RoxygenNote: 7.1.1
 Depends: R (>= 4.1.0)
 biocViews: sva, preprocessCore, stringr, biomaRt, genefilter,
-        org.Hs.eg.db, GenomicFeatures,
-        TxDb.Hsapiens.UCSC.hg19.knownGene, genefilter, TCGAbiolinks,
-        BiocGenerics, GenomicRanges, IRanges, S4Vectors
+        GenomicFeatures, genefilter, BiocGenerics, GenomicRanges,
+        IRanges, S4Vectors, org.Hs.eg.db,
+        TxDb.Hsapiens.UCSC.hg19.knownGene, maftools
 Imports: parallel, ridge, car, glmnet, pls, sva, preprocessCore,
-        GenomicFeatures, org.Hs.eg.db,
-        TxDb.Hsapiens.UCSC.hg19.knownGene, maftools, genefilter, gdata,
-        tidyverse, readxl, TCGAbiolinks, BiocGenerics, GenomicRanges,
-        IRanges, S4Vectors
+        GenomicFeatures, genefilter, gdata, tidyverse, readxl,
+        BiocGenerics, GenomicRanges, IRanges, S4Vectors, org.Hs.eg.db,
+        TxDb.Hsapiens.UCSC.hg19.knownGene, maftools
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2021-06-02 17:10:20 UTC; danie
+Packaged: 2021-09-24 02:27:46 UTC; Dani
 Author: Danielle Maeser [aut, cre] (<https://orcid.org/0000-0002-3890-887X>),
   Robert Gruener [ctb]
 Maintainer: Danielle Maeser <maese005@umn.edu>
 Repository: CRAN
-Date/Publication: 2021-06-04 06:20:05 UTC
+Date/Publication: 2021-09-24 08:00:02 UTC

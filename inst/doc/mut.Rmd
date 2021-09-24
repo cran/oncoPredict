@@ -30,9 +30,6 @@ cols=colnames(drug_prediction)
 colnames(drug_prediction)<-substring(cols, 3, nchar(cols))
 drug_prediction<-as.data.frame(t(drug_prediction))
 
-wd<-tempdir()
-savedir<-setwd(wd)
-
 #This script provides an example of how to download mutation data from the GDC database for GBM (glioblastoma) and
 #how to apply idwas() to test the drugs in your drug response dataset to each mutation to identify biomarkers that #enrich for drug response.
 
@@ -40,8 +37,9 @@ savedir<-setwd(wd)
 
 #GDCquery_Maf() downloads MAF (mutation annotation files) for glioblastoma (GBM).
 #Other disease abbreviations include: "ACC", "BLCA", "BRCA", "CESC", "CHOL", "COAD", "COADREAD", "DLBC", "GBM", "GBMLGG", "HNSC", "KICH", "KIPAN", #"KIRC", "KIRP", "LAML", "LGG", "LIHC", "LUAD", "LUSC", "MESO", "OV", "PAAD", "PCPG", "PRAD", "READ", "SARC", "SKCM", "STAD", "STES", "TGCT", "THCA", #"THYM", "UCEC", "UCS", "UVM"
-library(TCGAbiolinks)
-maf<-GDCquery_Maf("GBM", pipelines = "muse")
+#library(TCGAbiolinks)
+#maf<-GDCquery_Maf("GBM", pipelines = "muse")
+maf<-read.table('maf.txt', header=TRUE, row.names=1)
 
 #Set the data parameter.
 #Make sure this data is a data frame and that colnames() are samples.
@@ -55,4 +53,12 @@ n=10
 #Indicate whether or not you would like to test cnv data. If TRUE, you will test cnv data. If FALSE, you will test mutation data.
 cnv=FALSE
 
+original<-getwd()
+wd<-tempdir()
+savedir<-setwd(wd)
+
+#Apply idwas()
+#idwas(drug_prediction=drug_prediction, data=data, n=n, cnv=cnv)
+
+setwd(original)
 ```
