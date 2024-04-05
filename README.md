@@ -1,10 +1,13 @@
 # oncoPredict 
 (Predict Response from Expression Data and Identify Cell line/Clinical Targets and Trends)
 
+Additional details about this package can be found in our publication [oncoPredict: an R package for predicting in vivo or cancer patient drug response and biomarkers from cell line screening data](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8574972/)
+
 An R package for drug response prediction and drug-gene association prediction. The prepared GDSC and CTRP matrices for the calcPhenotype() are located in the oncoPredict OSF.
  *  For drug response prediction, use **calcPhenotype**. 
  *  For pre-clinical biomarker discovery, use **GLDS**. 
  * For clinical biomarker discovery, use **IDWAS** (for CNV or somatic mutation association with drug response) or indicate **cc=TRUE** (for gene expression association with drug response) in calcPhenotype(). 
+ * The link to updated CCLE gene expression data is found at [depmap](https://depmap.org/portal/download/). We provide GDSC1/GDSC2 pre-processed expression and response data, as well as CTRP response data and depmap's CCLE expression data (18Q2) [here](https://osf.io/c6tfx/).
  
 ## R <h2>
  * This directory contains all the R functions included in this package. 

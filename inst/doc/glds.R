@@ -1,4 +1,4 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -104,7 +104,6 @@ drugRelatedness <- read.csv("screened_compunds_rel_8.2.csv")
 drugRelatedness<-drugRelatedness[,c(3,6)]
 #colnames(drugRelatedness) #"DRUG_NAME"      "TARGET_PATHWAY"
 
-original<-getwd()
 wd<-tempdir()
 savedir<-setwd(wd)
 
@@ -114,6 +113,4 @@ glds(drugMat,
      minMuts=5,
      additionalCovariateMatrix=NULL,
      threshold=0.7)
-
-setwd(original)
 

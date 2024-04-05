@@ -14,88 +14,103 @@
 
 <title>mut</title>
 
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 
 <style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
 
 
 <style type="text/css">
-  code {
-    white-space: pre;
-  }
-  .sourceCode {
-    overflow: visible;
-  }
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
 </style>
 <style type="text/css" data-origin="pandoc">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
 div.sourceCode
-  {  }
+{ }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
 </style>
 <script>
 // apply pandoc div.sourceCode style to pre.sourceCode instead
@@ -104,13 +119,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -318,52 +340,55 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(oncoPredict)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="co">#Apply idwas() function.</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co">#Determine the parameters of the idwas() function...</span></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="co">#Set the drug_prediction parameter.</span></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co">#Make sure rownames() are samples, and colnames() are drugs. Also make sure this data is a data frame.</span></a>
-<a class="sourceLine" id="cb1-8" data-line-number="8">drug_prediction&lt;-<span class="kw">as.data.frame</span>(<span class="kw">read.table</span>(<span class="st">'DrugPredictions.txt'</span>, <span class="dt">header=</span><span class="ot">TRUE</span>, <span class="dt">row.names=</span><span class="dv">1</span>))</a>
-<a class="sourceLine" id="cb1-9" data-line-number="9"><span class="co">#In this example, I had to replace the '.' in the names of these TCGA samples with '-' so that they are of the same form as samples in the mutation  data (you may not have to do this).</span></a>
-<a class="sourceLine" id="cb1-10" data-line-number="10"><span class="kw">colnames</span>(drug_prediction)&lt;-<span class="kw">gsub</span>(<span class="st">&quot;.&quot;</span>, <span class="st">&quot;-&quot;</span>, <span class="kw">colnames</span>(drug_prediction), <span class="dt">fixed=</span>T)</a>
-<a class="sourceLine" id="cb1-11" data-line-number="11"><span class="co">#Make sure the sample identifiers in the 'drug prediction' data are of similar form as the sample identifiers in the 'data' parameter.</span></a>
-<a class="sourceLine" id="cb1-12" data-line-number="12">cols=<span class="kw">colnames</span>(drug_prediction)</a>
-<a class="sourceLine" id="cb1-13" data-line-number="13"><span class="kw">colnames</span>(drug_prediction)&lt;-<span class="kw">substring</span>(cols, <span class="dv">3</span>, <span class="kw">nchar</span>(cols))</a>
-<a class="sourceLine" id="cb1-14" data-line-number="14">drug_prediction&lt;-<span class="kw">as.data.frame</span>(<span class="kw">t</span>(drug_prediction))</a>
-<a class="sourceLine" id="cb1-15" data-line-number="15"></a>
-<a class="sourceLine" id="cb1-16" data-line-number="16"><span class="co">#This script provides an example of how to download mutation data from the GDC database for GBM (glioblastoma) and</span></a>
-<a class="sourceLine" id="cb1-17" data-line-number="17"><span class="co">#how to apply idwas() to test the drugs in your drug response dataset to each mutation to identify biomarkers that #enrich for drug response.</span></a>
-<a class="sourceLine" id="cb1-18" data-line-number="18"></a>
-<a class="sourceLine" id="cb1-19" data-line-number="19"><span class="co">#Download mutation data for your cancer of interest from GDC database.</span></a>
-<a class="sourceLine" id="cb1-20" data-line-number="20"></a>
-<a class="sourceLine" id="cb1-21" data-line-number="21"><span class="co">#GDCquery_Maf() downloads MAF (mutation annotation files) for glioblastoma (GBM).</span></a>
-<a class="sourceLine" id="cb1-22" data-line-number="22"><span class="co">#Other disease abbreviations include: &quot;ACC&quot;, &quot;BLCA&quot;, &quot;BRCA&quot;, &quot;CESC&quot;, &quot;CHOL&quot;, &quot;COAD&quot;, &quot;COADREAD&quot;, &quot;DLBC&quot;, &quot;GBM&quot;, &quot;GBMLGG&quot;, &quot;HNSC&quot;, &quot;KICH&quot;, &quot;KIPAN&quot;, #&quot;KIRC&quot;, &quot;KIRP&quot;, &quot;LAML&quot;, &quot;LGG&quot;, &quot;LIHC&quot;, &quot;LUAD&quot;, &quot;LUSC&quot;, &quot;MESO&quot;, &quot;OV&quot;, &quot;PAAD&quot;, &quot;PCPG&quot;, &quot;PRAD&quot;, &quot;READ&quot;, &quot;SARC&quot;, &quot;SKCM&quot;, &quot;STAD&quot;, &quot;STES&quot;, &quot;TGCT&quot;, &quot;THCA&quot;, #&quot;THYM&quot;, &quot;UCEC&quot;, &quot;UCS&quot;, &quot;UVM&quot;</span></a>
-<a class="sourceLine" id="cb1-23" data-line-number="23"><span class="co">#library(TCGAbiolinks)</span></a>
-<a class="sourceLine" id="cb1-24" data-line-number="24"><span class="co">#maf&lt;-GDCquery_Maf(&quot;GBM&quot;, pipelines = &quot;muse&quot;)</span></a>
-<a class="sourceLine" id="cb1-25" data-line-number="25">maf&lt;-<span class="kw">read.table</span>(<span class="st">'maf.txt'</span>, <span class="dt">header=</span><span class="ot">TRUE</span>, <span class="dt">row.names=</span><span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb1-26" data-line-number="26"></a>
-<a class="sourceLine" id="cb1-27" data-line-number="27"><span class="co">#Set the data parameter.</span></a>
-<a class="sourceLine" id="cb1-28" data-line-number="28"><span class="co">#Make sure this data is a data frame and that colnames() are samples.</span></a>
-<a class="sourceLine" id="cb1-29" data-line-number="29">data&lt;-<span class="kw">as.data.frame</span>(maf)</a>
-<a class="sourceLine" id="cb1-30" data-line-number="30">samps&lt;-data<span class="op">$</span>Tumor_Sample_Barcode</a>
-<a class="sourceLine" id="cb1-31" data-line-number="31">data<span class="op">$</span>Tumor_Sample_Barcode&lt;-<span class="kw">substr</span>(samps,<span class="dv">1</span>,<span class="kw">nchar</span>(samps)<span class="op">-</span><span class="dv">12</span>) <span class="co">#Make sure these sample ids are of the same form as the sample ids in your prediction data.</span></a>
-<a class="sourceLine" id="cb1-32" data-line-number="32"></a>
-<a class="sourceLine" id="cb1-33" data-line-number="33"><span class="co">#Determine the number of samples you want the CNVs to be amplified in. The default is 10.</span></a>
-<a class="sourceLine" id="cb1-34" data-line-number="34">n=<span class="dv">10</span></a>
-<a class="sourceLine" id="cb1-35" data-line-number="35"></a>
-<a class="sourceLine" id="cb1-36" data-line-number="36"><span class="co">#Indicate whether or not you would like to test cnv data. If TRUE, you will test cnv data. If FALSE, you will test mutation data.</span></a>
-<a class="sourceLine" id="cb1-37" data-line-number="37">cnv=<span class="ot">FALSE</span></a>
-<a class="sourceLine" id="cb1-38" data-line-number="38"></a>
-<a class="sourceLine" id="cb1-39" data-line-number="39">original&lt;-<span class="kw">getwd</span>()</a>
-<a class="sourceLine" id="cb1-40" data-line-number="40">wd&lt;-<span class="kw">tempdir</span>()</a>
-<a class="sourceLine" id="cb1-41" data-line-number="41">savedir&lt;-<span class="kw">setwd</span>(wd)</a>
-<a class="sourceLine" id="cb1-42" data-line-number="42"></a>
-<a class="sourceLine" id="cb1-43" data-line-number="43"><span class="co">#Apply idwas()</span></a>
-<a class="sourceLine" id="cb1-44" data-line-number="44"><span class="co">#idwas(drug_prediction=drug_prediction, data=data, n=n, cnv=cnv)</span></a>
-<a class="sourceLine" id="cb1-45" data-line-number="45"></a>
-<a class="sourceLine" id="cb1-46" data-line-number="46"><span class="kw">setwd</span>(original)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(oncoPredict)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#Apply idwas() function.</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co">#Determine the parameters of the idwas() function...</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#Set the drug_prediction parameter.</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#Make sure rownames() are samples, and colnames() are drugs. Also make sure this data is a data frame.</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>drug_prediction<span class="ot">&lt;-</span><span class="fu">as.data.frame</span>(<span class="fu">read.table</span>(<span class="st">&#39;DrugPredictions.txt&#39;</span>, <span class="at">header=</span><span class="cn">TRUE</span>, <span class="at">row.names=</span><span class="dv">1</span>))</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#In this example, I had to replace the &#39;.&#39; in the names of these TCGA samples with &#39;-&#39; so that they are of the same form as samples in the mutation  data (you may not have to do this).</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="fu">colnames</span>(drug_prediction)<span class="ot">&lt;-</span><span class="fu">gsub</span>(<span class="st">&quot;.&quot;</span>, <span class="st">&quot;-&quot;</span>, <span class="fu">colnames</span>(drug_prediction), <span class="at">fixed=</span>T)</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#Make sure the sample identifiers in the &#39;drug prediction&#39; data are of similar form as the sample identifiers in the &#39;data&#39; parameter.</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>cols<span class="ot">=</span><span class="fu">colnames</span>(drug_prediction)</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="fu">colnames</span>(drug_prediction)<span class="ot">&lt;-</span><span class="fu">substring</span>(cols, <span class="dv">3</span>, <span class="fu">nchar</span>(cols))</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>drug_prediction<span class="ot">&lt;-</span><span class="fu">as.data.frame</span>(<span class="fu">t</span>(drug_prediction))</span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>wd<span class="ot">&lt;-</span><span class="fu">tempdir</span>()</span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>savedir<span class="ot">&lt;-</span><span class="fu">setwd</span>(wd)</span></code></pre></div>
+<p>This script <em>used to</em> provide an example of how to download
+mutation data from the GDC database for GBM (glioblastoma) and how to
+apply idwas() to test the drugs in your drug response dataset to each
+mutation to identify biomarkers that #enrich for drug response.</p>
+<p>However, GDC updated how to get the MAF dataset, so we will just
+provide information so the readers can hopefully get it to run if they
+need.</p>
+<p>Download mutation data for your cancer of interest from GDC
+database.</p>
+<p><a href="https://bioconductor.org/packages/release/bioc/vignettes/TCGAbiolinks/inst/doc/mutation.html" class="uri">https://bioconductor.org/packages/release/bioc/vignettes/TCGAbiolinks/inst/doc/mutation.html</a></p>
+<p><a href="https://rdrr.io/bioc/TCGAbiolinks/f/vignettes/mutation.Rmd" class="uri">https://rdrr.io/bioc/TCGAbiolinks/f/vignettes/mutation.Rmd</a></p>
+<p>The code would look something like this:
+<code>library(TCGAbiolinks)</code>
+<code>query_maf &lt;- GDCquery(project = &quot;TCGA-GBM&quot;,</code>
+<code>data.category = &quot;Simple Nucleotide Variation&quot;,</code>
+<code>access = &quot;open&quot;,</code>
+<code>data.type = &quot;Simple somatic mutation&quot;,</code>
+<code>legacy = TRUE)</code></p>
+<p><code>GDCdownload(query)</code>
+<code>maf &lt;- GDCprepare(query)</code></p>
+<p>Then there is some light formatting to be done before running
+IDWAS.</p>
+<p>#Make sure this data is a data frame and that colnames() are samples.
+data&lt;-as.data.frame(maf) samps&lt;-data<span class="math inline">\(Tumor_Sample_Barcode
+data\)</span>Tumor_Sample_Barcode&lt;-substr(samps,1,nchar(samps)-12)
+#Make sure these sample ids are of the same form as the sample ids in
+your prediction data.</p>
+<p>#Determine the number of samples you want the CNVs to be amplified
+in. The default is 10. n=10</p>
+<p>#Indicate whether or not you would like to test cnv data. If TRUE,
+you will test cnv data. If FALSE, you will test mutation data.
+cnv=FALSE</p>
 
 
 

@@ -1,4 +1,4 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -112,7 +112,6 @@ percent=80
 
 #Run the calcPhenotype() function using the parameters you specified above.
 #__________________________________________________________________________________________________________________________________
-original<-getwd()
 wd<-tempdir()
 savedir<-setwd(wd)
 
@@ -136,7 +135,4 @@ calcPhenotype(trainingExprData=trainingExprData,
 #View(load('./calcPhenotype_Output/Vinblastine_1004.RData'))
 #View(pcs[,1,1]) #The first pc. 
 #View(pcs[,1,2]) #The second pc. 
-
-setwd(original)
-
 
