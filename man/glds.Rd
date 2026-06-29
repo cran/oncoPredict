@@ -11,7 +11,8 @@ glds(
   minMuts = 5,
   additionalCovariateMatrix = NULL,
   expression = NULL,
-  threshold = 0.7
+  threshold = 0.7,
+  folder = FALSE
 )
 }
 \arguments{
@@ -31,7 +32,27 @@ The default is NULL. If expression data is provided, a gene signature will be ob
 
 \item{threshold}{Determine the correlation coefficient. Drugs with a correlation coefficient greater than or equal to this number with the drug under scrutiny will be removed from the negative control group.
 The default is 0.7}
+
+\item{folder}{If TRUE, write GLDS p-value and beta outputs to CSV files in the current working directory. The default is FALSE.}
+}
+\value{
+A list containing GLDS-adjusted p-values and beta values, plus naive p-values and beta values.
 }
 \description{
 This function determines drug-gene associations for pre-clinical data.
+}
+\examples{
+set.seed(1)
+sampleNames <- paste0("cell", 1:14)
+drugNames <- paste0("drug", 1:6)
+drugMat <- matrix(rnorm(14 * 6), nrow=14,
+                  dimnames=list(sampleNames, drugNames))
+drugRelatedness <- cbind(drug=drugNames,
+                         pathway=paste0("pathway", 1:6))
+markerMat <- matrix(c(rep(c(0, 1), 7), rep(c(1, 0), 7)),
+                    nrow=2, byrow=TRUE,
+                    dimnames=list(c("marker1", "marker2"), sampleNames))
+gldsResult <- glds(drugMat, drugRelatedness, markerMat,
+                   minMuts=1, threshold=1)
+names(gldsResult)
 }

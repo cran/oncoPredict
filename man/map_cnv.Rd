@@ -2,18 +2,33 @@
 % Please edit documentation in R/IDWAS.R
 \name{map_cnv}
 \alias{map_cnv}
-\title{This function maps cnv data to genes. The output of this function is a .RData file called map.RData; this file contains theCnvQuantVecList_mat (rows are genes, and columns are samples) and tumorSamps (indicates which samples are primary tumor samples, 01A).}
+\title{This function maps cnv data to genes.}
 \usage{
-map_cnv(Cnvs)
+map_cnv(Cnvs, folder = FALSE)
 }
 \arguments{
 \item{Cnvs}{The cnv data. A table with the following colnames: Sample (named using the TCGA patient barcode), Chromosome, Start, End, Num_Probes, and Segment_Mean.}
+
+\item{folder}{If TRUE, write a map.RData file containing the mapped CNV matrix and tumor sample indices. The default is FALSE.}
 }
 \value{
-A .RData file called, map.RData, which stores two objects: theCnvQuantVecList_mat (rows are genes, columns are samples), tumorSamps (indicates which samples are primary tumor/01A). This output will serve as the input for test().
+A list containing theCnvQuantVecList_mat (rows are genes, columns are samples) and tumorSamps (primary tumor/01A sample column indices).
 }
 \description{
-This function maps cnv data to genes. The output of this function is a .RData file called map.RData; this file contains theCnvQuantVecList_mat (rows are genes, and columns are samples) and tumorSamps (indicates which samples are primary tumor samples, 01A).
+This function maps cnv data to genes.
+}
+\examples{
+if (requireNamespace("org.Hs.eg.db", quietly=TRUE) &&
+    requireNamespace("TxDb.Hsapiens.UCSC.hg19.knownGene", quietly=TRUE)) {
+  cnvData <- data.frame(Sample="TCGA-01-0001-01A-01D-0000-01",
+                        Chromosome=7,
+                        Start=55000000,
+                        End=55200000,
+                        Num_Probes=10,
+                        Segment_Mean=1.5)
+  mapped <- map_cnv(cnvData)
+  names(mapped)
+}
 }
 \keyword{CNV}
 \keyword{Map}

@@ -17,3 +17,8 @@ A vector of row/genes to keep.
 \description{
 This function performs variable selection by removing genes with the lowest variance in the datasets.
 }
+\examples{
+exprMat <- matrix(seq_len(20), nrow=5,
+                  dimnames=list(paste0("gene", 1:5), paste0("sample", 1:4)))
+doVariableSelection(exprMat, removeLowVaryingGenes=0.2)
+}

@@ -48,6 +48,7 @@ overflow: visible;
 }
 </style>
 <style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -342,53 +343,55 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(oncoPredict)</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#Apply idwas() function.</span></span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co">#Determine the parameters of the idwas() function...</span></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#Set the drug_prediction parameter.</span></span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#Make sure rownames() are samples, and colnames() are drugs. Also make sure this data is a data frame.</span></span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>drug_prediction<span class="ot">&lt;-</span><span class="fu">as.data.frame</span>(<span class="fu">read.table</span>(<span class="st">&#39;DrugPredictions.txt&#39;</span>, <span class="at">header=</span><span class="cn">TRUE</span>, <span class="at">row.names=</span><span class="dv">1</span>))</span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#In this example, I had to replace the &#39;.&#39; in the names of these TCGA samples with &#39;-&#39; so that they are of the same form as samples in the mutation  data (you may not have to do this).</span></span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="fu">colnames</span>(drug_prediction)<span class="ot">&lt;-</span><span class="fu">gsub</span>(<span class="st">&quot;.&quot;</span>, <span class="st">&quot;-&quot;</span>, <span class="fu">colnames</span>(drug_prediction), <span class="at">fixed=</span>T)</span>
-<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#Make sure the sample identifiers in the &#39;drug prediction&#39; data are of similar form as the sample identifiers in the &#39;data&#39; parameter.</span></span>
-<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>cols<span class="ot">=</span><span class="fu">colnames</span>(drug_prediction)</span>
-<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="fu">colnames</span>(drug_prediction)<span class="ot">&lt;-</span><span class="fu">substring</span>(cols, <span class="dv">3</span>, <span class="fu">nchar</span>(cols))</span>
-<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>drug_prediction<span class="ot">&lt;-</span><span class="fu">as.data.frame</span>(<span class="fu">t</span>(drug_prediction))</span>
-<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a></span>
-<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>wd<span class="ot">&lt;-</span><span class="fu">tempdir</span>()</span>
-<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>savedir<span class="ot">&lt;-</span><span class="fu">setwd</span>(wd)</span></code></pre></div>
-<p>This script <em>used to</em> provide an example of how to download
-mutation data from the GDC database for GBM (glioblastoma) and how to
-apply idwas() to test the drugs in your drug response dataset to each
-mutation to identify biomarkers that #enrich for drug response.</p>
-<p>However, GDC updated how to get the MAF dataset, so we will just
-provide information so the readers can hopefully get it to run if they
-need.</p>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#This vignette demonstrates how to prepare predicted drug response and mutation</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co">#data for mutation-based IDWAS with idwas(cnv=FALSE).</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#Determine the parameters of the idwas() function...</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#Set the drug_prediction parameter.</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#Make sure rownames() are samples, and colnames() are drugs. Also make sure this data is a data frame.</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>drug_prediction<span class="ot">&lt;-</span><span class="fu">as.data.frame</span>(<span class="fu">read.table</span>(<span class="fu">vignette_file</span>(<span class="st">&quot;DrugPredictions.txt&quot;</span>), <span class="at">header=</span><span class="cn">TRUE</span>, <span class="at">row.names=</span><span class="dv">1</span>))</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#In this example, replace &#39;.&#39; with &#39;-&#39; so the TCGA sample identifiers match the</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#format used in the mutation data.</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="fu">colnames</span>(drug_prediction)<span class="ot">&lt;-</span><span class="fu">gsub</span>(<span class="st">&quot;.&quot;</span>, <span class="st">&quot;-&quot;</span>, <span class="fu">colnames</span>(drug_prediction), <span class="at">fixed=</span>T)</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co">#Make sure the sample identifiers in the &#39;drug prediction&#39; data are of similar form as the sample identifiers in the &#39;data&#39; parameter.</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>cols<span class="ot">=</span><span class="fu">colnames</span>(drug_prediction)</span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="fu">colnames</span>(drug_prediction)<span class="ot">&lt;-</span><span class="fu">substring</span>(cols, <span class="dv">3</span>, <span class="fu">nchar</span>(cols))</span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>drug_prediction<span class="ot">&lt;-</span><span class="fu">as.data.frame</span>(<span class="fu">t</span>(drug_prediction))</span></code></pre></div>
+<p>This vignette provides an example of how to prepare mutation data
+from the GDC database for GBM (glioblastoma) and how to apply
+<code>idwas()</code> to test predicted drug response against somatic
+mutations.</p>
+<p>Because GDC and TCGAbiolinks access patterns can change over time,
+the download code is shown as non-executed guidance.</p>
 <p>Download mutation data for your cancer of interest from GDC
 database.</p>
 <p><a href="https://bioconductor.org/packages/release/bioc/vignettes/TCGAbiolinks/inst/doc/mutation.html" class="uri">https://bioconductor.org/packages/release/bioc/vignettes/TCGAbiolinks/inst/doc/mutation.html</a></p>
 <p><a href="https://rdrr.io/bioc/TCGAbiolinks/f/vignettes/mutation.Rmd" class="uri">https://rdrr.io/bioc/TCGAbiolinks/f/vignettes/mutation.Rmd</a></p>
-<p>The code would look something like this:
-<code>library(TCGAbiolinks)</code>
-<code>query_maf &lt;- GDCquery(project = &quot;TCGA-GBM&quot;,</code>
-<code>data.category = &quot;Simple Nucleotide Variation&quot;,</code>
-<code>access = &quot;open&quot;,</code>
-<code>data.type = &quot;Simple somatic mutation&quot;,</code>
-<code>legacy = TRUE)</code></p>
-<p><code>GDCdownload(query)</code>
-<code>maf &lt;- GDCprepare(query)</code></p>
-<p>Then there is some light formatting to be done before running
-IDWAS.</p>
-<p>#Make sure this data is a data frame and that colnames() are samples.
-data&lt;-as.data.frame(maf) samps&lt;-data<span class="math inline">\(Tumor_Sample_Barcode
-data\)</span>Tumor_Sample_Barcode&lt;-substr(samps,1,nchar(samps)-12)
-#Make sure these sample ids are of the same form as the sample ids in
-your prediction data.</p>
-<p>#Determine the number of samples you want the CNVs to be amplified
-in. The default is 10. n=10</p>
-<p>#Indicate whether or not you would like to test cnv data. If TRUE,
-you will test cnv data. If FALSE, you will test mutation data.
-cnv=FALSE</p>
+<p>The code would look something like this:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(TCGAbiolinks)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>query_maf <span class="ot">&lt;-</span> <span class="fu">GDCquery</span>(<span class="at">project =</span> <span class="st">&quot;TCGA-GBM&quot;</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>                      <span class="at">data.category =</span> <span class="st">&quot;Simple Nucleotide Variation&quot;</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>                      <span class="at">access =</span> <span class="st">&quot;open&quot;</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>                      <span class="at">data.type =</span> <span class="st">&quot;Simple somatic mutation&quot;</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>                      <span class="at">legacy =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="fu">GDCdownload</span>(query_maf)</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>maf <span class="ot">&lt;-</span> <span class="fu">GDCprepare</span>(query_maf)</span></code></pre></div>
+<p>After downloading the mutation data, format the mutation table before
+running IDWAS.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co">#Make sure this data is a data frame with mutation annotations in columns.</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co">#For idwas(cnv=FALSE), the data should include Variant_Classification,</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#Hugo_Symbol, and Tumor_Sample_Barcode.</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>data<span class="ot">&lt;-</span><span class="fu">as.data.frame</span>(maf)</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>samps<span class="ot">&lt;-</span>data<span class="sc">$</span>Tumor_Sample_Barcode</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>data<span class="sc">$</span>Tumor_Sample_Barcode<span class="ot">&lt;-</span><span class="fu">substr</span>(samps,<span class="dv">1</span>,<span class="fu">nchar</span>(samps)<span class="sc">-</span><span class="dv">12</span>) <span class="co">#Make sure these sample ids are of the same form as the sample ids in your prediction data.</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#Determine the number of samples you want mutations to occur in. The default is 10.</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>n<span class="ot">=</span><span class="dv">10</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#Indicate whether or not you would like to test CNA amplification data. If TRUE, you will test CNA amplifications. If FALSE, you will test mutation data.</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>cnv<span class="ot">=</span><span class="cn">FALSE</span></span></code></pre></div>
 
 
 

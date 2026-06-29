@@ -15,6 +15,11 @@ A gene expression matrix that does not contain duplicate genes.
 \description{
 This function takes a gene expression matrix and if duplicate genes are measured, summarizes them by their means.
 }
+\examples{
+exprMat <- matrix(seq_len(12), nrow=3,
+                  dimnames=list(paste0("gene", 1:3), paste0("sample", 1:4)))
+summarizeGenesByMean(exprMat)
+}
 \keyword{Summarize}
 \keyword{by}
 \keyword{duplicate}

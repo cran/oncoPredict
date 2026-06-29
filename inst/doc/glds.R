@@ -4,63 +4,80 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
+vignette_file <- function(...) {
+  candidates <- c(
+    file.path(...),
+    file.path("vignettes", ...),
+    file.path("inst", "extdata", ...),
+    file.path(Sys.getenv("PWD"), "inst", "extdata", ...),
+    system.file("extdata", ..., package = "oncoPredict"),
+    system.file("doc", ..., package = "oncoPredict")
+  )
+  candidates <- candidates[nzchar(candidates) & file.exists(candidates)]
+  if (!length(candidates)) {
+    stop("Could not find vignette file: ", file.path(...), call. = FALSE)
+  }
+  candidates[[1]]
+}
+
 ## ----setup--------------------------------------------------------------------
 library(oncoPredict)
 
-#This script provides an example of how to control for GLDS in pre-clinical biomarker discovery. 
-#Specifically, this script applies glds functions to GDSCv2 data to obtain p-values and beta values for each #drug-gene association. 
-#Controlling for GLDS is important because variability in GLDS is evient in cancer cell lines, and controlling for #this variability improves cancer biomarker discovery.
+#This vignette demonstrates how to control for general levels of drug sensitivity
+#(GLDS) in pre-clinical biomarker discovery. The example applies glds() to GDSC2
+#data to obtain p-values and beta values for drug-marker associations.
 
-#Set parameters of completeMatrix()
+#Set parameters of completeMatrix().
 #_____________________________________________________________________
 #nPerms=50
 
 #trainingPtype = readRDS(file = "GDSC2_Res.rds")
-#There are some NA values so prcomp() will complain when you apply the GLDS function.
+#There are some NA values, which will cause prcomp() to fail when applying GLDS.
 #senMat=trainingPtype
 
 #Apply completeMatrix()
 #_____________________________________________________________________
-#This function will create a file called complete_matrix_output.txt in your working directory.
-#This file is used as input in the next function.
+#This function returns the completed matrix. Set folder=TRUE to also write complete_matrix_output.txt.
 
 #completeMatrix(trainingPtype)
 
-#Apply the glds function.
+#Apply the glds() function.
 #_____________________________________________________________________
 
 #Set parameters...
 
-#'@param drugMat A matrix of drug sensitivity data. rownames() are pre-clinical samples, and colnames() are drug names.
+#drugMat is a matrix of drug sensitivity data. rownames() are pre-clinical samples, and colnames() are drug names.
 #The sensitivity data used here is GDSCv2.
 
 #Read GDSC's updated cell line information file (used later).
 #cellLineDetails<-read_excel('Cell_Lines_Details.xlsx')
-cellLineDetails<-read.csv('Cell_Lines_Details.csv')
+cellLineDetails<-read.csv(vignette_file("Cell_Lines_Details.csv"))
 
-#I ran the response data through completeMatrix() because there were some NA values.
-#NA values in the response data will cause a problem when you apply prcomp().
-cm<-read.table('complete_matrix_output_GDSCv2.txt', header=TRUE, row.names=1) #Now, there are no NA values.
+#The response data were processed with completeMatrix() because NA values in the
+#response matrix will cause prcomp() to fail.
+cm<-read.table(vignette_file("complete_matrix_output_GDSCv2.txt"), header=TRUE, row.names=1) #No NA values remain.
 
-#rownames(cm) #Cosmic identifiers are used for cell names in this dataset...this will cause a problem later when matching cell lines between sensitivity and mutation data.
+#Cosmic identifiers are used for cell names in this dataset and are converted
+#to cell-line names before matching with the marker matrix.
 
 #Replace the rownames of cm with cell line names. Right now, they are cosmic ids.
 #This will require using GDSC's cell line details file (which maps cosmic ids to cell line names).
 newRows <- substring(rownames(cm),8) #Remove 'COSMIC'...keep the numbers after COSMIC.
 indices<-match(as.numeric(newRows), as.vector(unlist(cellLineDetails[,2]))) #Refer to the cell line details file to make this replacement.
 newNames<-as.vector(unlist(cellLineDetails[,1]))[indices] #Reports the corresponding cell line names
-rownames(cm)<-newNames
+# Match the sanitized cell-line names used in the example marker matrix.
+rownames(cm)<-make.names(newNames)
 
-#Fix the drug names in the cm object so that it's just the name of the drug (remove those extra numbers/identifiers at the end).
-#gdscv2_drugs.xlsx contains the colnames of cm in the correct order, but with the extra identifiers removed.
+#Update the drug names in cm by removing extra identifiers appended to the names.
+#gdscv2_drugs.xlsx contains the colnames of cm in the correct order with those identifiers removed.
 #fix<-read_excel('gdscv2_drugs.xlsx')
 #fix<-as.vector(unlist(fix[,2]))
-fix<-as.vector(unlist(read.table('gdscv2_drugs.txt', header=TRUE)))
+fix<-as.vector(unlist(read.table(vignette_file("gdscv2_drugs.txt"), header=TRUE)))
 colnames(cm)<-as.vector(fix)
 drugMat<-as.matrix(cm) #Finally, set this object as the drugMat parameter. 
-#dim(drugMat) #805 samples vs. 198 drugs
+#dim(drugMat) #100 samples vs. 198 drugs in this reduced example file.
 
-#'@param markerMat A matrix containing the data for which you are looking for an association with drug sensitivity (e.g. a matrix of somatic mutation data). rownames() are 
+#markerMat contains the data to test for association with drug sensitivity (e.g. a matrix of somatic mutation data). rownames() are
 #marker names (e.g. gene names), and colnames() are samples.
 #The dataset used here is GDSCv2's updated mutation data for pan-cancer. It includes both CNV and coding variant.
 #mutationMat<-read.csv('GDSC2_Pan_Both.csv')
@@ -81,7 +98,7 @@ drugMat<-as.matrix(cm) #Finally, set this object as the drugMat parameter.
 #mutationMat4<-mutationMat3 %>%
 #  pivot_wider(names_from=genetic_feature,
 #              values_from=is_mutated)
-#rownames(mutationMat4)<-as.vector(unlist(mutationMat4[,1])) #Make cell lines the #rownames...right now they are column 1.
+#rownames(mutationMat4)<-as.vector(unlist(mutationMat4[,1])) #Use cell lines as rownames before transposing.
 #cols<-rownames(mutationMat4)
 #mutationMat4<-as.matrix(t(mutationMat4[,-1]))
 #Make sure the matrix is numeric.
@@ -92,25 +109,27 @@ drugMat<-as.matrix(cm) #Finally, set this object as the drugMat parameter.
 # replace all non-finite values with 0
 #markerMat[!is.finite(markerMat)] <- 0
 #colnames(markerMat)<-cols
-#dim(markerMat) #1315 1389
 #write.table(markerMat, file='markerMat.txt')
-markerMat<-as.matrix(read.table('markerMat.txt', header=TRUE, row.names=1))
+#The included example markerMat is reduced to the top 200 markers among the samples used here.
+markerMat<-as.matrix(read.table(vignette_file("markerMat.txt"), header=TRUE, row.names=1, check.names=FALSE))
+#dim(markerMat) #200 markers vs. 40 samples in this reduced example file.
 
-#'@param drugRelatedness 
+if(length(intersect(colnames(markerMat), rownames(drugMat))) == 0){
+  stop("No overlapping samples were found between markerMat and drugMat.")
+}
+
+#drugRelatedness contains drug names and the corresponding target pathways.
 #This file is GDSC's updated drug relatedness file (obtained from bulk data download/all compounds screened/compounds-annotation).
-#Note: I had to change some drug names in this file so that they matched colnames of cm.
+#Some drug names in this file were adjusted so they match colnames of cm.
 #Ex: replace - with . (small modifications like that).
-drugRelatedness <- read.csv("screened_compunds_rel_8.2.csv")
+drugRelatedness <- read.csv(vignette_file("screened_compunds_rel_8.2.csv"))
 drugRelatedness<-drugRelatedness[,c(3,6)]
 #colnames(drugRelatedness) #"DRUG_NAME"      "TARGET_PATHWAY"
 
-wd<-tempdir()
-savedir<-setwd(wd)
-
-glds(drugMat,
-     drugRelatedness,
-     markerMat,
-     minMuts=5,
-     additionalCovariateMatrix=NULL,
-     threshold=0.7)
+glds_results <- glds(drugMat,
+                     drugRelatedness,
+                     markerMat,
+                     minMuts=5,
+                     additionalCovariateMatrix=NULL,
+                     threshold=0.7)
 

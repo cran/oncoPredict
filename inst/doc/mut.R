@@ -4,23 +4,64 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
+vignette_file <- function(...) {
+  candidates <- c(
+    file.path(...),
+    file.path("vignettes", ...),
+    file.path("inst", "extdata", ...),
+    file.path(Sys.getenv("PWD"), "inst", "extdata", ...),
+    system.file("extdata", ..., package = "oncoPredict"),
+    system.file("doc", ..., package = "oncoPredict")
+  )
+  candidates <- candidates[nzchar(candidates) & file.exists(candidates)]
+  if (!length(candidates)) {
+    stop("Could not find vignette file: ", file.path(...), call. = FALSE)
+  }
+  candidates[[1]]
+}
+
 ## ----setup--------------------------------------------------------------------
 library(oncoPredict)
 
-#Apply idwas() function.
+#This vignette demonstrates how to prepare predicted drug response and mutation
+#data for mutation-based IDWAS with idwas(cnv=FALSE).
 
 #Determine the parameters of the idwas() function...
 #Set the drug_prediction parameter.
 #Make sure rownames() are samples, and colnames() are drugs. Also make sure this data is a data frame.
-drug_prediction<-as.data.frame(read.table('DrugPredictions.txt', header=TRUE, row.names=1))
-#In this example, I had to replace the '.' in the names of these TCGA samples with '-' so that they are of the same form as samples in the mutation  data (you may not have to do this).
+drug_prediction<-as.data.frame(read.table(vignette_file("DrugPredictions.txt"), header=TRUE, row.names=1))
+#In this example, replace '.' with '-' so the TCGA sample identifiers match the
+#format used in the mutation data.
 colnames(drug_prediction)<-gsub(".", "-", colnames(drug_prediction), fixed=T)
 #Make sure the sample identifiers in the 'drug prediction' data are of similar form as the sample identifiers in the 'data' parameter.
 cols=colnames(drug_prediction)
 colnames(drug_prediction)<-substring(cols, 3, nchar(cols))
 drug_prediction<-as.data.frame(t(drug_prediction))
 
-wd<-tempdir()
-savedir<-setwd(wd)
 
+## ----mutation-download, eval=FALSE--------------------------------------------
+# library(TCGAbiolinks)
+# 
+# query_maf <- GDCquery(project = "TCGA-GBM",
+#                       data.category = "Simple Nucleotide Variation",
+#                       access = "open",
+#                       data.type = "Simple somatic mutation",
+#                       legacy = TRUE)
+# 
+# GDCdownload(query_maf)
+# maf <- GDCprepare(query_maf)
+
+## ----mutation-formatting, eval=FALSE------------------------------------------
+# #Make sure this data is a data frame with mutation annotations in columns.
+# #For idwas(cnv=FALSE), the data should include Variant_Classification,
+# #Hugo_Symbol, and Tumor_Sample_Barcode.
+# data<-as.data.frame(maf)
+# samps<-data$Tumor_Sample_Barcode
+# data$Tumor_Sample_Barcode<-substr(samps,1,nchar(samps)-12) #Make sure these sample ids are of the same form as the sample ids in your prediction data.
+# 
+# #Determine the number of samples you want mutations to occur in. The default is 10.
+# n=10
+# 
+# #Indicate whether or not you would like to test CNA amplification data. If TRUE, you will test CNA amplifications. If FALSE, you will test mutation data.
+# cnv=FALSE
 

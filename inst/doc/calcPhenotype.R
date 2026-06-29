@@ -4,24 +4,40 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
+vignette_file <- function(...) {
+  candidates <- c(
+    file.path(...),
+    file.path("vignettes", ...),
+    file.path("inst", "extdata", ...),
+    file.path(Sys.getenv("PWD"), "inst", "extdata", ...),
+    system.file("extdata", ..., package = "oncoPredict"),
+    system.file("doc", ..., package = "oncoPredict")
+  )
+  candidates <- candidates[nzchar(candidates) & file.exists(candidates)]
+  if (!length(candidates)) {
+    stop("Could not find vignette file: ", file.path(...), call. = FALSE)
+  }
+  candidates[[1]]
+}
+
 ## ----setup--------------------------------------------------------------------
 
 library(oncoPredict)
 
-#This script provides an example of how to use calcPhenotype() for drug response prediction as well as its optional #parameters. 
+#This vignette demonstrates how to use calcPhenotype() for drug response prediction and how to set commonly used optional parameters.
 
-#Set the seed for reproducibility. 
+#Set the seed for reproducibility.
 set.seed(12345)
 
 #Determine parameters for calcPhenotype() function.
 
-#Read training data for GDSC (expression and response)
+#Read training data for GDSC (expression and response).
 #_______________________________________________________
 
 #GDSC1 Data
 #Read GDSC training expression data. rownames() are genes and colnames() are samples (cell lines/cosmic ids).
 #trainingExprData=(readRDS("GDSC1_Expr.rds"))
-#dim(trainingExprData) #17419 958 
+#dim(trainingExprData) #17419 958
 #Read GDSC1 response data. rownames() are samples (cell lines, cosmic ids), colnames() are drugs.
 #trainingPtype = (readRDS("GDSC1_Res.rds"))
 #dim(trainingPtype) #958 367 For GDSC1
@@ -31,16 +47,17 @@ set.seed(12345)
 #Read GDSC training expression data. rownames() are genes and colnames() are samples.
 #trainingExprData=readRDS(file='GDSC2_Expr.rds')
 #dim(trainingExprData) #17419 805
-#Read GDSC2 response data. rownames() are samples, colnames() are drugs. 
-trainingPtype = readRDS(file = "GDSC2_Res.rds")
+#Read GDSC2 response data. rownames() are samples, colnames() are drugs.
+trainingPtype = readRDS(file = vignette_file("GDSC2_Res.rds"))
 #dim(trainingPtype) #805 198
 
-#GDSC2 expression data for the vignette (it's a much smaller sampling)
-trainingExprData=readRDS(file='GDSC2_Expr_short.rds')
-#dim(trainingExprData) #1000 400
+#GDSC2 expression data for this vignette. This is a reduced example dataset.
+trainingExprData=readRDS(file = vignette_file("GDSC2_Expr_short.rds"))
+#dim(trainingExprData) #500 200
 
-#IMPORTANT note: here I do e^IC50 since the IC50s are actual ln values/log transformed already, and the calcPhenotype function Paul #has will do a power transformation (I assumed it would be better to not have both transformations)
-trainingPtype<-exp(trainingPtype) 
+#The GDSC IC50 values are already log-transformed. Convert them back before using
+#the default power transformation in calcPhenotype().
+trainingPtype<-exp(trainingPtype)
 
 #Or read training data for CTRP (expression and response)
 #_______________________________________________________
@@ -49,19 +66,19 @@ trainingPtype<-exp(trainingPtype)
 #dim(trainingExprData) #51847 829
 #Read CTRP training response data. rownames() are samples (cell lines, cosmic ids), colnames() are drugs.
 #trainingPtype = readRDS(file = "CTRP2_Res.rds")
-#dim(trainingPtype) #829 545 
+#dim(trainingPtype) #829 545
 
-#Test data. 
+#Test data.
 #_______________________________________________________
 #Read testing data as a matrix with rownames() as genes and colnames() as samples.
-testExprData=as.matrix(read.table('prostate_test_data.txt', header=TRUE, row.names=1))
-#dim(testExprData) #20530 550
+testExprData=as.matrix(read.table(vignette_file("prostate_test_data.txt"), header=TRUE, row.names=1))
+#dim(testExprData) #1000 20
 
-#Additional parameters. 
+#Additional parameters.
 #_______________________________________________________
-#batchCorrect options: "eb" for ComBat, "qn" for quantiles normalization, "standardize", or "none"
-#"eb" is good to use when you use microarray training data to build models on microarray testing data.
-#"standardize is good to use when you use microarray training data to build models on RNA-seq testing data (this is what Paul used in the 2017 IDWAS paper that used GDSC microarray to impute in TCGA RNA-Seq data, see methods section of that paper for rationale)
+#batchCorrect options: "eb" for ComBat, "qn" for quantile normalization, "standardize" for z-score standardization, "rank", "rank_then_eb", or "none"
+#"eb" is often used when the training and testing datasets are both microarray data.
+#"standardize" can be useful when training with microarray data and predicting in RNA-seq data.
 batchCorrect<-"eb"
 
 #Determine whether or not to power transform the phenotype data.
@@ -69,30 +86,31 @@ batchCorrect<-"eb"
 powerTransformPhenotype<-TRUE
 
 #Determine percentage of low varying genes to remove.
-#Default is 0.2 (seemingly arbitrary).
+#Default is 0.2. This filter reduces the influence of low-variance genes and can
+#also reduce runtime for large RNA-seq matrices.
 removeLowVaryingGenes<-0.2
 
 #Determine method to remove low varying genes.
 #Options are 'homogenizeData' and 'rawData'
-#homogenizeData is likely better if there is ComBat batch correction, raw data was used in the 2017 IDWAS paper that used GDSC microarray to impute in TCGA RNA-Seq data.
+#Use 'homogenizeData' to filter after the training and test matrices have been
+#aligned and batch-corrected.
 removeLowVaringGenesFrom<-"homogenizeData"
 
 #Determine the minimum number of training samples required to train on.
-#Note: this shouldn't be an issue if you train using GDSC or CTRP because there are many samples in both training datasets.
-#10, I believe, is arbitrary and testing could be done to get a better number.
+#This example uses reduced data, so the threshold is set low enough for the
+#vignette. Larger analyses should use enough samples to fit a reliable model.
 minNumSamples=10
 
 #Determine how you would like to deal with duplicate gene IDs.
-#Sometimes based on how you clean the data, there shouldn't be any duplicates to deal with.
+#Depending on preprocessing, duplicate gene identifiers may or may not be present.
 #Options are -1 for ask user, 1 for summarize by mean, and 2 for disregard duplicates
 selection<- 1
 
-#Determine if you'd like to print outputs.
-#Default is TRUE.
-printOutput=TRUE
+#Determine if you'd like to print outputs. Set to FALSE here to keep the vignette output concise.
+printOutput=FALSE
 
-#Indicate whether or not you'd like to use PCA for feature/gene reduction. Options are 'TRUE' and 'FALSE'.
-#Note: If you indicate 'report_pca=TRUE' you need to also indicate 'pca=TRUE'
+#Indicate whether or not you'd like to use principal component regression for feature/gene reduction. Options are 'TRUE' and 'FALSE'.
+#Note: If you indicate 'report_pc=TRUE' you need to also indicate 'pcr=TRUE'
 pcr=FALSE
 
 #Indicate whether you want to output the principal components. Options are 'TRUE' and 'FALSE'.
@@ -107,32 +125,41 @@ cc=FALSE
 #Options are 'TRUE' and 'FALSE'.
 rsq=FALSE
 
-#Indicate percent variability (of the training data) you'd like principal components to reflect if pcr=TRUE. Default is .80
+#Indicate percent variability (of the training data) you'd like principal components to reflect if pcr=TRUE. Default is 80.
 percent=80
 
-#Run the calcPhenotype() function using the parameters you specified above.
+#Run calcPhenotype() using the parameters specified above.
 #__________________________________________________________________________________________________________________________________
-wd<-tempdir()
-savedir<-setwd(wd)
+drug_predictions <- calcPhenotype(trainingExprData=trainingExprData,
+                                  trainingPtype=trainingPtype,
+                                  testExprData=testExprData,
+                                  batchCorrect=batchCorrect,
+                                  powerTransformPhenotype=powerTransformPhenotype,
+                                  removeLowVaryingGenes=removeLowVaryingGenes,
+                                  minNumSamples=minNumSamples,
+                                  selection=selection,
+                                  printOutput=printOutput,
+                                  pcr=pcr,
+                                  removeLowVaringGenesFrom=removeLowVaringGenesFrom,
+                                  report_pc=report_pc,
+                                  cc=cc,
+                                  percent=percent,
+                                  rsq=rsq)
 
-calcPhenotype(trainingExprData=trainingExprData,
-              trainingPtype=trainingPtype,
-              testExprData=testExprData,
-              batchCorrect=batchCorrect,
-              powerTransformPhenotype=powerTransformPhenotype,
-              removeLowVaryingGenes=removeLowVaryingGenes,
-              minNumSamples=minNumSamples,
-              selection=selection,
-              printOutput=printOutput,
-              pcr=pcr,
-              removeLowVaringGenesFrom=removeLowVaringGenesFrom,
-              report_pc=report_pc,
-              cc=cc,
-              percent=percent,
-              rsq=rsq)
+#The returned matrix contains predicted drug response values for each test sample.
+#dim(drug_predictions)
 
-#If pcr is performed, you can view a drug's first two principal components (and so on) using the code below. 
-#View(load('./calcPhenotype_Output/Vinblastine_1004.RData'))
-#View(pcs[,1,1]) #The first pc. 
-#View(pcs[,1,2]) #The second pc. 
+#Visualize the predicted drug response matrix.
+drug_predictions_scaled <- t(scale(drug_predictions))
+drug_predictions_scaled[!is.finite(drug_predictions_scaled)] <- 0
+heatmap(drug_predictions_scaled,
+        Rowv=NA,
+        Colv=NA,
+        scale="none",
+        labRow=NA,
+        cexCol=0.7,
+        margins=c(6, 2),
+        xlab="Test samples",
+        ylab="Drugs",
+        main="Predicted drug response")
 

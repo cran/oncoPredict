@@ -17,7 +17,7 @@ homogenizeData(
 
 \item{trainExprMat}{A gene expression matrix for samples for which the phenotype is already known.Genes are rows, samples are columns.}
 
-\item{batchCorrect}{The type of batch correction to be used. Options are 'eb' for Combat, 'none', or 'qn' for quantile normalization.
+\item{batchCorrect}{The type of batch correction to be used. Options are 'eb' for ComBat, 'qn' for quantile normalization, 'standardize' for within-dataset z-score standardization, 'rank', 'rank_then_eb', or 'none'. The 'standardize' option can be useful when using microarray training data to build models on RNA-seq testing data.
 #The default is 'eb'.}
 
 \item{selection}{This parameter can be used to specify how duplicates are handled. The default value of -1 means to ask the user.
@@ -33,6 +33,15 @@ This function takes two gene expression matrices (like trainExprMat and testExpr
 By default, the Combat method from the sva library is used.
 In both matrices, genes are row names and samples are column names.
 It will deal with duplicated gene names, as it subsets and orders the matrices correctly.
+}
+\examples{
+trainExpr <- matrix(rnorm(20), nrow=5,
+                    dimnames=list(paste0("gene", 1:5), paste0("train", 1:4)))
+testExpr <- matrix(rnorm(10), nrow=5,
+                   dimnames=list(paste0("gene", 1:5), paste0("test", 1:2)))
+homData <- homogenizeData(testExpr, trainExpr, batchCorrect="none",
+                          selection=1, printOutput=FALSE)
+names(homData)
 }
 \keyword{Homogenize}
 \keyword{data.}
